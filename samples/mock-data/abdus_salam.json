@@ -3,5 +3,6 @@
     "first": "Abdus",
     "last": "Salam"
   },
-  "gender": "male"
+  "gender": "male",
+  "born": 1926
 }
