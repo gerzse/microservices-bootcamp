@@ -16,6 +16,7 @@ def users():
                     u['name']['first'] == user_data['name']['first'] and u['name']['last'] == user_data['name']['last']]
         if existing:
             id = existing[0][0]
+            # TODO: update other fields if changed
         else:
             id = str(uuid.uuid1())
             user_data['id'] = id

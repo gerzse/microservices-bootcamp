@@ -1,7 +1,7 @@
 <html>
 <body>
 {% for user in users %}
-{{ user['name']['first'] }} {{ user['name']['last'] }} <img src="http://localhost:9002/photo/{{ user['id'] }}"/><br>
+{{ user['name']['first'] }} {{ user['name']['last'] }} <img src="http://localhost:9002/photo/{{ user['id'] }}" width="200"/><br>
 {% endfor %}
 </body>
 </html>

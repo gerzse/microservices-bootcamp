@@ -1,35 +1,63 @@
-# microservices-bootcamp
-Bootcamp on Microservices
+# King's Thursday Bootcamp on Microservices
 
-## Study Material
+The subject matter of this bootcamp are microservices. We will look at some basic
+principles of microservices, and then we will build from scratch two microservices
+and a client that consumes them.
 
-* https://martinfowler.com/articles/microservices.html
-* https://palletsprojects.com/p/flask/
+## Agenda
 
-## Main Reasons for Using Microservices
+- Theoretical overview of microservices (first 20 minutes or so)
+- Coding session (rest of the time, up to two hours, or longer if desired)
 
-* Services are independently deployable. In a monolith application, a change to
-any component requires a full redeploy of the entire application. In a Microservices
-application only affected services must be redeployed (most of the times).
-* More explicit component interface. HTTP interfaces define unbreakable boundaries
-between services. In a monolith application with shared codebase it is difficult to
-forbid over-tight coupling between components.
+## Prerequisites
+
+For the coding session, depending on what technology you plan to use, please prepare
+your environment (IDE, JDK, frameworks, debuggers, etc.) before the bootcamp. We don't
+want to spend time during the workshop installing Java or Python.
+
+Some tools and frameworks that can be used for building microservices:
+
+* Python/Flask: https://palletsprojects.com/p/flask/
+* Java/Spring Boot: https://spring.io/guides/gs/rest-service/
+* Java/JAX-RS (GlassFish/Payara)
+* NodeJS/Express: https://expressjs.com/en/starter/hello-world.html
+* .NET: https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-web-api
+
+There are many options available. Choose the one that you feel comfortable with. If
+you feel like exploring, choose two different technologies, given that we will build
+two microservices.
 
 ## Coding Session
 
 Develop two microservices that can be used together for managing a list of users:
 basic data like name, gender and year of birth, and profile pictures. One
-microservice will manage the user data, the other one will manage the profile
-pictures.
+microservice will manage the basic data, the other one will manage the profile
+pictures. Use the programming language(s) of your choice for building the two microservices.
+Feel free to even use different languages for the two.
 
 Write a very simple client that orchestrates the two microservices and generates 
-some form of output where users and their photos are processed together.
+some form of output where users and their photos are processed together. Again, use the language
+of your choice to build this minimalist client.
 
-You have some sample data in the `mock-data` directory.
+You have some sample data in the `samples/mock-data` directory.
 
 You should keep the implementation of the microservices as simple as possible. For
-example you can use a quick-and-dirty in-memory store (e.g. a map or dictionary),
-don't bother connecting to databases. Focus on getting the REST interfaces right.
+example you can use an in-memory store (e.g. a map or dictionary), don't bother
+storing things in a database. Focus on getting the REST interfaces right.
+
+If everything works out well, feel free to do one more step. In your client implement
+a transactional update of a user. In one transaction you should POST data to both 
+microservices, and if the second call fails for a reason you make sure that no garbage
+remains, which means you cleanup the data you sent to the first microservice. This 
+might require adding some DELETE endpoints to the microservices. To test, you can 
+shutdown one of the microservices when you run the client.
+
+The specification for the REST API of the two microservices follows.
+
+In the `samples/python` directory you can find a sample implementation of the two 
+microservices in Python. It is a trivial implementation, basically without error
+checking. In `samples/client.py` you can find a sample implementation of a client,
+again in Python.
 
 ### Users Data Microservice
 
