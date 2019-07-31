@@ -7,6 +7,7 @@ and a client that consumes them.
 ## Agenda
 
 - Theoretical overview of microservices (first 20 minutes or so)
+Presentation Link: https://nagarro-my.sharepoint.com/:p:/p/doru_ambrus/EVz1pO_g9MZMmN1IGdaJEAQBG_Vs8mI4YcWDAu4mEbxcyw?e=9NLs0t
 - Coding session (rest of the time, up to two hours, or longer if desired)
 
 ## Prerequisites
