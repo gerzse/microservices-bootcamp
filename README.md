@@ -19,7 +19,8 @@ want to spend time during the workshop installing Java or Python.
 Some tools and frameworks that can be used for building microservices:
 
 * Python/Flask: https://palletsprojects.com/p/flask/
-* Java/Spring Boot: https://spring.io/guides/gs/rest-service/
+* Java/Spring Boot: https://spring.io/guides/gs/rest-service/ 
+- https://s3.amazonaws.com/baeldung.com/Building+a+REST+API+with+Spring.pdf
 * Java/JAX-RS (GlassFish Server):  https://docs.oracle.com/javaee/7/tutorial/jaxrs.htm#GIEPU
 * NodeJS/Express: https://expressjs.com/en/starter/hello-world.html
 * .NET: https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-web-api
