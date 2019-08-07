@@ -50,3 +50,13 @@ func Detele(c *gin.Context){
 		c.String(500, "User with id: %s dose not exist", uuid)
 	}
 }
+
+func GetAllUsers(c *gin.Context){
+
+	users := make([]User, len(userStorage))
+
+	for _, u := range userStorage{
+		users = append(users, u)
+	}
+	c.JSON(200,  users)
+}
