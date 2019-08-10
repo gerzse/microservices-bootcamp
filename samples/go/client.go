@@ -2,52 +2,69 @@ package main
 
 import (
 	"bytes"
-	"crypto/rand"
+	_ "crypto/rand"
+	_ "encoding/hex"
 	"fmt"
+	"github.com/joho/godotenv"
+	"github.com/satori/go.uuid"
+	_ "image/jpeg"
+	"io"
 	"io/ioutil"
 	"log"
+	"mime/multipart"
 	"net/http"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
-
-	"github.com/joho/godotenv"
 )
+func postFile(baseName string, storagePath string, uuid string, photoAddr string) error{
 
-type Name struct{
-	First string `json:"first"`
-	Last  string `json:"last"`
-}
+	bodyBuf := &bytes.Buffer{}
+	bodyWriter := multipart.NewWriter(bodyBuf)
 
-type User struct{
-	Name Name `json:"name"`
-	Gender string `json:"gender"`
-	BirthYear uint16 `json:"born"`
-}
-
-func generateUUID(size uint) string{
-
-	// Generate UUID(size uint) -> will generate random uuid
-	b := make([]byte, size)
-	_ , err := rand.Read(b)
+	filePath := path.Join(storagePath, baseName + ".jpg")
+	fileWriter, err := bodyWriter.CreateFormFile("photo", filePath)
 	if err != nil{
-		log.Fatal(err)
+		return err
 	}
-	uuid := fmt.Sprintf("%x-%x-%x-%x-%x",
-		b[0:4], b[4:6], b[6:8], b[8:10], b[10:])
-	return uuid
+	fileHandler, err := os.Open(filePath)
+	if err != nil{
+		return err
+	}
+	defer fileHandler.Close()
+	_, err = io.Copy(fileWriter, fileHandler)
+	if err != nil {
+		return err
+	}
+	contentType := bodyWriter.FormDataContentType()
+	_ = bodyWriter.Close()
 
+	resp, err := http.Post(photoAddr + "/" + uuid, contentType, bodyBuf)
+	if err != nil{
+		return err
+	}
+	defer resp.Body.Close()
+	fmt.Println(fmt.Sprintf("Set image for user: %s", baseName))
+	return nil
 }
 
-func readJsonFile(filename string) []byte{
-	jsonFile, err := os.Open(filename)
-	if err != nil{
-		log.Fatal(err)
-	}
-	defer jsonFile.Close()
-	content, _ := ioutil.ReadAll(jsonFile)
-	return content
+func addUser(baseName string, mockStoragePath string, photoAddr string, userAddr string){
 
+	uuid := uuid.NewV4().String()
+	userData, _ := ioutil.ReadFile(path.Join(mockStoragePath, baseName+".json"))
+
+	resp, err := http.Post(userAddr + "/user/" + uuid, "application/json", bytes.NewBuffer(userData))
+	if err != nil{
+		log.Fatalln(err)
+	}
+	defer resp.Body.Close()
+	fmt.Println(fmt.Sprintf("Created user: %s with UUID %s ", baseName, uuid))
+
+	err = postFile(baseName, mockStoragePath, uuid, photoAddr)
+	if err != nil{
+		log.Fatalln(err)
+	}
 }
 func main(){
 
@@ -56,15 +73,14 @@ func main(){
 		log.Fatal("Error while loading .env file")
 	}
 	userServiceAddress := os.Getenv("USER_SERVICE_BASE_ADDRESS")
+	photoServiceAdress := os.Getenv("PHOTO_SERVICE_BASE_ADDRESS")
+
 	dir, err := os.Getwd()
 	if err != nil{
 		log.Fatal(err)
 	}
 	baseDir := path.Dir(dir)
-	fmt.Println(baseDir)
-
 	mockDataRoot := path.Join(baseDir, "/mock-data")
-	fmt.Println(mockDataRoot)
 
 	files, err := ioutil.ReadDir(mockDataRoot)
 	if err != nil{
@@ -73,19 +89,9 @@ func main(){
 	for _, file := range files{
 		if strings.HasSuffix(file.Name(), ".json"){
 			filePath := path.Join(mockDataRoot, file.Name())
-			content := readJsonFile(filePath)
-			uuid := generateUUID(16)
-			resp, err := http.Post(userServiceAddress + "/user/" + uuid, "application/json", bytes.NewBuffer(content))
-			if err != nil{
-				log.Fatal(err)
-			}
-			defer resp.Body.Close()
-
-			body, err := ioutil.ReadAll(resp.Body)
-			if err != nil{
-				log.Fatal()
-			}
-			log.Println(string(body))
+			fileName := path.Base(filePath)
+			baseName := strings.TrimSuffix(fileName, filepath.Ext(fileName))
+			addUser(baseName, mockDataRoot, photoServiceAdress,userServiceAddress)
 		}
 	}
 }

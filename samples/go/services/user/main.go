@@ -14,6 +14,6 @@ func main(){
 
 	err := router.Run(":8080")
 	if err != nil{
-		log.Fatal("Could Run server on port: 8080")
+		log.Fatal("Could not run server on port: 8080")
 	}
 }
